@@ -7,8 +7,10 @@
  * This URL is only used server-side (build + ISR), not in client-side Vue components.
  */
 
-const HUB_API_BASE =
-  (import.meta.env.PUBLIC_HUB_API_URL || 'https://cloud.comfy.org').replace(/\/$/, '');
+const HUB_API_BASE = (import.meta.env.PUBLIC_HUB_API_URL || 'https://cloud.comfy.org').replace(
+  /\/$/,
+  ''
+);
 
 // ---------------------------------------------------------------------------
 // Types — mirrors backend OpenAPI schemas
@@ -202,9 +204,7 @@ export async function listWorkflows(
   if (params.status?.length) qs.set('status', params.status.join(','));
 
   const query = qs.toString();
-  return hubFetch<HubWorkflowListResponse>(
-    `/api/hub/workflows${query ? `?${query}` : ''}`
-  );
+  return hubFetch<HubWorkflowListResponse>(`/api/hub/workflows${query ? `?${query}` : ''}`);
 }
 
 /**
@@ -243,8 +243,9 @@ const ALL_STATUSES: WorkflowStatus[] = ['pending', 'approved', 'rejected', 'depr
 export function listWorkflowIndex(): Promise<HubWorkflowTemplateEntry[]> {
   if (!indexCache) {
     const statuses = APPROVED_ONLY ? 'approved' : ALL_STATUSES.join(',');
+    const params = new URLSearchParams({ status: statuses });
     indexCache = hubFetch<HubWorkflowTemplateEntry[]>(
-      `/api/hub/workflows/index?status=${statuses}`
+      `/api/hub/workflows/index?${params.toString()}`
     );
   }
   return indexCache;
@@ -467,7 +468,9 @@ export function extractShareId(urlSegment: string): string | null {
  * In local builds (no PUBLIC_HUB_API_URL), falls back to content collection.
  */
 export async function loadSerializedTemplates(
-  getCollection: () => Promise<{ id: string; data: Parameters<typeof serializeCollectionEntry>[0] }[]>
+  getCollection: () => Promise<
+    { id: string; data: Parameters<typeof serializeCollectionEntry>[0] }[]
+  >
 ): Promise<SerializedTemplate[]> {
   const profiles = await getProfileCache();
   try {
@@ -486,9 +489,7 @@ export async function loadSerializedTemplates(
   }
 }
 
-function mapThumbnailVariant(
-  type?: string
-): ThumbnailVariant | undefined {
+function mapThumbnailVariant(type?: string): ThumbnailVariant | undefined {
   if (type === 'image_comparison') return 'compareSlider';
   return undefined;
 }

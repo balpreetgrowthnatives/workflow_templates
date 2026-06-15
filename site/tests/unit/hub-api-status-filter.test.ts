@@ -58,7 +58,7 @@ describe('listWorkflowIndex status filtering', () => {
     expect(result).toHaveLength(5);
 
     const calledUrl = fetchSpy.mock.calls[0][0] as string;
-    expect(calledUrl).toContain('?status=pending,approved,rejected,deprecated');
+    expect(calledUrl).toContain('?status=pending%2Capproved%2Crejected%2Cdeprecated');
   });
 
   it('caches the result across multiple calls', async () => {

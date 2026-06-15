@@ -58,7 +58,8 @@ async function fetchIndexEntries(): Promise<IndexEntry[] | null> {
 
   const approvedOnly = process.env.PUBLIC_APPROVED_ONLY === 'true';
   const statuses = approvedOnly ? 'approved' : 'pending,approved,rejected,deprecated';
-  const res = await fetch(`${apiUrl}/api/hub/workflows/index?status=${statuses}`);
+  const params = new URLSearchParams({ status: statuses });
+  const res = await fetch(`${apiUrl}/api/hub/workflows/index?${params.toString()}`);
 
   if (!res.ok) {
     throw new Error(`Hub API returned ${res.status}: ${res.statusText}`);
